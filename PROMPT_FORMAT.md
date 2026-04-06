@@ -93,6 +93,24 @@ messages = [
 # <role>board=0;ceo=1;cxo=0;primary=0;support=0;bu=0</role>
 ```
 
+## Recommended: GBNF Grammar for Structured Output
+
+When using this model with llama.cpp or llama-cpp-python, we recommend using a GBNF grammar to guarantee the output format is parseable. The grammar constrains the formatting tokens but does not affect the model's classification decisions — at each binary label, the model freely chooses 0 or 1 based on its learned probabilities.
+
+```
+root ::= rank-tag "\n" role-tag
+
+rank-tag ::= "<rank>" rank-pairs "</rank>"
+rank-pairs ::= "vp=" bit ";svp=" bit ";evp=" bit ";sevp=" bit ";dir=" bit ";sdir=" bit ";md=" bit ";smd=" bit ";se=" bit ";vc=" bit ";svc=" bit ";president=" bit
+
+role-tag ::= "<role>" role-pairs "</role>"
+role-pairs ::= "board=" bit ";ceo=" bit ";cxo=" bit ";primary=" bit ";support=" bit ";bu=" bit
+
+bit ::= "0" | "1"
+```
+
+Without grammar, the model may produce semantically correct but differently formatted output (e.g., `rank: vp=1;svp=0;...` or one label per line), which requires a more flexible parser.
+
 ## Label Definitions Summary
 
 | Label | Category | Meaning |
